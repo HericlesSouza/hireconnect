@@ -1,2 +1,5 @@
-package com.hireconnect.core.entity;public enum TypeUser {
+package com.hireconnect.core.entity;
+
+public enum TypeUser {
+    FREELANCER, OWNER, ADMIN
 }
