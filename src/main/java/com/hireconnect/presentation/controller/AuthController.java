@@ -2,6 +2,7 @@ package com.hireconnect.presentation.controller;
 
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.useCase.AuthUseCase;
+import com.hireconnect.presentation.dto.auth.AuthLoginDTO;
 import com.hireconnect.presentation.dto.user.UserCreateDTO;
 import com.hireconnect.presentation.dto.user.UserDTO;
 import com.hireconnect.presentation.mapper.UserMapper;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,5 +30,11 @@ public class AuthController {
         User userRegistered = this.authUseCase.register(user);
         UserDTO userDTO = this.userMapper.toUserDTO(userRegistered);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid AuthLoginDTO payload) {
+        Map<String, Object> response = this.authUseCase.login(payload.getEmail(), payload.getPassword());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 }

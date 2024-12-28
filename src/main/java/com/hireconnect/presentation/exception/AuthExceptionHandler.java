@@ -1,10 +1,10 @@
 package com.hireconnect.presentation.exception;
 
+import com.hireconnect.core.exception.AuthenticationException;
 import com.hireconnect.core.exception.EmailAlreadyExistsException;
 import com.hireconnect.presentation.controller.AuthController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
