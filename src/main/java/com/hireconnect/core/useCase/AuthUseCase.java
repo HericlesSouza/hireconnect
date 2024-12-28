@@ -1,17 +1,24 @@
 package com.hireconnect.core.useCase;
 
 import com.hireconnect.core.entity.User;
+import com.hireconnect.core.exception.AuthenticationException;
 import com.hireconnect.core.exception.EmailAlreadyExistsException;
 import com.hireconnect.core.repository.UserRepository;
+import com.hireconnect.infra.security.TokenService;
+import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class AuthUseCase {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     public User register(User payload) {
         this.validateEmailDoesNotExist(payload.getEmail());
@@ -20,6 +27,23 @@ public class AuthUseCase {
         User user = new User(payload.getName(), payload.getEmail(), passwordEncrypted, payload.getImgUrl(), payload.getTypeUser());
         this.userRepository.save(user);
         return user;
+    }
+
+    public Map<String, Object> login(String email, String password) {
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException("Email or password incorrect."));
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            String token = this.tokenService.generateToken(user);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", user);
+            response.put("expiresAt", tokenService.getTokenExpiration(token)); // Obtém a expiração do token
+
+            return response;
+        }
+
+        throw new AuthenticationException("Email or password incorrect.");
     }
 
     public void validateEmailDoesNotExist(String email) {
