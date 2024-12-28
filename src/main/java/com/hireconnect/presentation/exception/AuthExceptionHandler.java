@@ -21,7 +21,7 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
-        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+        ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, ex.getMessage(), List.of("Email or password is incorrect."));
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
 }

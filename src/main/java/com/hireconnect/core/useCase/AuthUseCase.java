@@ -30,7 +30,7 @@ public class AuthUseCase {
     }
 
     public Map<String, Object> login(String email, String password) {
-        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException("Email or password incorrect."));
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new AuthenticationException("Invalid credentials."));
 
         if (passwordEncoder.matches(password, user.getPassword())) {
             String token = this.tokenService.generateToken(user);
@@ -43,7 +43,7 @@ public class AuthUseCase {
             return response;
         }
 
-        throw new AuthenticationException("Email or password incorrect.");
+        throw new AuthenticationException("Invalid credentials.");
     }
 
     public void validateEmailDoesNotExist(String email) {
