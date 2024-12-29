@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getMessage());
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResourceFoundException(NoResourceFoundException ex, WebRequest request) {
+        String errorMessage = "The requested resource was not found: " + ex.getMessage();
+
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errorMessage);
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)

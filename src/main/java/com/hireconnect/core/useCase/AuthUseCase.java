@@ -3,10 +3,12 @@ package com.hireconnect.core.useCase;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.AuthenticationException;
 import com.hireconnect.core.exception.EmailAlreadyExistsException;
+import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.UserRepository;
 import com.hireconnect.infra.security.TokenService;
 import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +46,10 @@ public class AuthUseCase {
         }
 
         throw new AuthenticationException("Invalid credentials.");
+    }
+
+    public User getUserDetails(Authentication authentication) {
+        return (User) authentication.getPrincipal();
     }
 
     public void validateEmailDoesNotExist(String email) {
