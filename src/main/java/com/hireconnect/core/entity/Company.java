@@ -40,7 +40,7 @@ public class Company {
     private LocalDateTime updatedAt;
 
     @OneToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(unique = true, name = "owner_id")
+    @JoinColumn(unique = true, nullable = false, name = "owner_id")
     private User owner;
 
     public Company(String name, String description, User owner) {

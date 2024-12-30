@@ -57,7 +57,7 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "owner", optional = true)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
     private Company company;
 
     public User(String name, String email, String password, String imgUrl, TypeUser typeUser) {
