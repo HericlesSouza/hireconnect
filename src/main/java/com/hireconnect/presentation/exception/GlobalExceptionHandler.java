@@ -1,9 +1,11 @@
 package com.hireconnect.presentation.exception;
 
+import com.hireconnect.core.exception.ApiException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,14 +27,14 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList());
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation error", errors);
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(apiError);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiError> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
         String message = "Request method '" + ex.getMethod() + "' is not supported for this endpoint.";
         ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, message);
-        return new ResponseEntity<>(apiError, HttpStatus.METHOD_NOT_ALLOWED);
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(apiError);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -40,32 +42,25 @@ public class GlobalExceptionHandler {
         String errorMessage = "Invalid request body: " + ex.getMostSpecificCause().getMessage();
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, errorMessage);
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(apiError);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, "Access denied: You do not have permission to access this resource.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
-        ApiError apiError = new ApiError(HttpStatus.FORBIDDEN, ex.getMessage());
-        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiError> handleNoResourceFoundException(NoResourceFoundException ex, WebRequest request) {
-        String errorMessage = "The requested resource was not found: " + ex.getMessage();
-
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, errorMessage);
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiError> handleApiException(ApiException ex) {
+        ApiError apiError = new ApiError(ex.getStatus(), ex.getMessage());
+        return ResponseEntity.status(ex.getStatus()).body(apiError);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGlobalException(Exception ex, WebRequest request) {
-        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
-        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ApiError> handleGlobalException(Exception ex) {
+        ex.printStackTrace();
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 }

@@ -1,11 +1,13 @@
 package com.hireconnect.core.exception;
 
-public class EmailAlreadyExistsException extends  RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class EmailAlreadyExistsException extends ApiException {
     public EmailAlreadyExistsException() {
-        super("Email already exists.");
+        super("Email already exists.", HttpStatus.CONFLICT);
     }
 
     public EmailAlreadyExistsException(String message) {
-        super(message);
+        super(message, HttpStatus.CONFLICT);
     }
 }

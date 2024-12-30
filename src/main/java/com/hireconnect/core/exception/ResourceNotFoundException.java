@@ -1,11 +1,13 @@
 package com.hireconnect.core.exception;
 
-public class ResourceNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ResourceNotFoundException extends ApiException {
     public ResourceNotFoundException() {
-        super("Resource not found.");
+        super("Resource not found.", HttpStatus.NOT_FOUND);
     }
 
     public ResourceNotFoundException(String message) {
-        super(message);
+        super(message, HttpStatus.NOT_FOUND);
     }
 }
