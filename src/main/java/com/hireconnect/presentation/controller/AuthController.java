@@ -3,6 +3,7 @@ package com.hireconnect.presentation.controller;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.useCase.AuthUseCase;
 import com.hireconnect.presentation.dto.auth.AuthLoginDTO;
+import com.hireconnect.presentation.dto.auth.AuthLoginResponseDTO;
 import com.hireconnect.presentation.dto.user.UserCreateDTO;
 import com.hireconnect.presentation.dto.user.UserDTO;
 import com.hireconnect.presentation.mapper.UserMapper;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -31,8 +33,16 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody @Valid AuthLoginDTO payload) {
-        Map<String, Object> response = this.authUseCase.login(payload.getEmail(), payload.getPassword());
+    public ResponseEntity<AuthLoginResponseDTO> login(@RequestBody @Valid AuthLoginDTO payload) {
+        Map<String, Object> loginResponse = this.authUseCase.login(payload.getEmail(), payload.getPassword());
+
+        UserDTO userDTO = this.userMapper.toUserDTO((User) loginResponse.get("user"));
+        AuthLoginResponseDTO response = new AuthLoginResponseDTO(
+                (String) loginResponse.get("token"),
+                userDTO,
+                (Date) loginResponse.get("expiresAt")
+        );
+
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthLoginDTO {
-    @Email(message = "must be an email")
-    @NotBlank(message = "email is required")
+    @Email(message = "must be an email.")
+    @NotBlank(message = "email is required.")
     private String email;
 
-    @NotBlank(message = "password is required")
+    @NotBlank(message = "password is required.")
     private String password;
 }
