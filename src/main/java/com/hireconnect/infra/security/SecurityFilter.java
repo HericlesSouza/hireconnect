@@ -3,6 +3,7 @@ package com.hireconnect.infra.security;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +39,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (login != null) {
             User user = this.userRepository.findByEmail(login).orElseThrow(() -> new ResourceNotFoundException("User not found"));
             var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getTypeUser().name()));
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+            var authentication = new UsernamePasswordAuthenticationToken(user.getId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
