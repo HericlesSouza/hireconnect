@@ -4,16 +4,15 @@ import com.hireconnect.core.entity.Company;
 import com.hireconnect.core.useCase.CompanyUseCase;
 import com.hireconnect.presentation.dto.company.CompanyAndUserDTO;
 import com.hireconnect.presentation.dto.company.CreateCompanyDTO;
+import com.hireconnect.presentation.dto.company.UpdateCompanyDTO;
 import com.hireconnect.presentation.mapper.CompanyMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -29,5 +28,28 @@ public class CompanyController {
         Company company = this.companyUseCase.create(companyEntity);
         CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(companyAndUserDTO);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CompanyAndUserDTO> getById(@PathVariable String id) {
+        Company company = this.companyUseCase.getById(id);
+        CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
+        return ResponseEntity.status(HttpStatus.OK).body(companyAndUserDTO);
+    }
+
+    @PreAuthorize("hasRole('COMPANY')")
+    @PatchMapping()
+    public ResponseEntity<CompanyAndUserDTO> update(@RequestBody @Valid UpdateCompanyDTO payload) {
+        Company companyEntity = this.companyMapper.toCompanyEntity(payload);
+        Company company = this.companyUseCase.update(companyEntity);
+        CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
+        return ResponseEntity.status(HttpStatus.OK).body(companyAndUserDTO);
+    }
+
+    @PreAuthorize("hasRole('COMPANY')")
+    @DeleteMapping()
+    public ResponseEntity<Void> delete() {
+        this.companyUseCase.delete();
+        return ResponseEntity.noContent().build();
     }
 }
