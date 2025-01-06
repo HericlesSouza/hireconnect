@@ -1,4 +1,4 @@
-package com.hireconnect.core.useCase;
+package com.hireconnect.core.service;
 
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.AuthenticationException;

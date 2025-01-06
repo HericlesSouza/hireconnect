@@ -1,7 +1,7 @@
 package com.hireconnect.presentation.controller;
 
 import com.hireconnect.core.entity.Company;
-import com.hireconnect.core.useCase.CompanyUseCase;
+import com.hireconnect.core.service.CompanyService;
 import com.hireconnect.presentation.dto.company.CompanyAndUserDTO;
 import com.hireconnect.presentation.dto.company.CreateCompanyDTO;
 import com.hireconnect.presentation.dto.company.UpdateCompanyDTO;
@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/company")
 public class CompanyController {
-    private final CompanyUseCase companyUseCase;
+    private final CompanyService companyService;
     private final CompanyMapper companyMapper;
 
     @PreAuthorize("hasRole('COMPANY')")
     @PostMapping()
     public ResponseEntity<CompanyAndUserDTO> create(@RequestBody @Valid CreateCompanyDTO payload) {
         Company companyEntity = this.companyMapper.toCompanyEntity(payload);
-        Company company = this.companyUseCase.create(companyEntity);
+        Company company = this.companyService.create(companyEntity);
         CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(companyAndUserDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CompanyAndUserDTO> getById(@PathVariable String id) {
-        Company company = this.companyUseCase.getById(id);
+        Company company = this.companyService.getById(id);
         CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
         return ResponseEntity.status(HttpStatus.OK).body(companyAndUserDTO);
     }
@@ -41,7 +41,7 @@ public class CompanyController {
     @PatchMapping()
     public ResponseEntity<CompanyAndUserDTO> update(@RequestBody @Valid UpdateCompanyDTO payload) {
         Company companyEntity = this.companyMapper.toCompanyEntity(payload);
-        Company company = this.companyUseCase.update(companyEntity);
+        Company company = this.companyService.update(companyEntity);
         CompanyAndUserDTO companyAndUserDTO = this.companyMapper.toCompanyAndUserDTO(company);
         return ResponseEntity.status(HttpStatus.OK).body(companyAndUserDTO);
     }
@@ -49,7 +49,7 @@ public class CompanyController {
     @PreAuthorize("hasRole('COMPANY')")
     @DeleteMapping()
     public ResponseEntity<Void> delete() {
-        this.companyUseCase.delete();
+        this.companyService.delete();
         return ResponseEntity.noContent().build();
     }
 }
