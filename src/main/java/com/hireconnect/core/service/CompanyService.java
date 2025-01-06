@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
-public class CompanyUseCase {
+public class CompanyService {
     private final CompanyRepository repository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
@@ -73,6 +73,9 @@ public class CompanyUseCase {
         }
 
         user.setCompany(null);
+    }
+
+    public void grantAdminPermission() {
     }
 
     private void validateCompanyNameExists(String name) {

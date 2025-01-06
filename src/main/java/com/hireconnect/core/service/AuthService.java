@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
-public class AuthUseCase {
+public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
