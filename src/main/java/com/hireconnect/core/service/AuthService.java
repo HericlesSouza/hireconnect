@@ -4,9 +4,9 @@ import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.AuthenticationException;
 import com.hireconnect.core.exception.EmailAlreadyExistsException;
 import com.hireconnect.core.repository.UserRepository;
+import com.hireconnect.infra.security.SecurityUtils;
 import com.hireconnect.infra.security.TokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final SecurityUtils securityUtils;
 
     public User register(User payload) {
         this.validateEmailDoesNotExist(payload.getEmail());
@@ -46,8 +47,8 @@ public class AuthService {
         throw new AuthenticationException("Invalid credentials.");
     }
 
-    public User getUserDetails(Authentication authentication) {
-        return (User) authentication.getPrincipal();
+    public User getUserDetails() {
+        return this.securityUtils.getAuthenticatedUser();
     }
 
     public void validateEmailDoesNotExist(String email) {
