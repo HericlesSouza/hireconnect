@@ -75,9 +75,6 @@ public class CompanyService {
         user.setCompany(null);
     }
 
-    public void grantAdminPermission() {
-    }
-
     private void validateCompanyNameExists(String name) {
         if (this.repository.existsByName(name)) {
             throw new BusinessException("A company with this name already exists.");
