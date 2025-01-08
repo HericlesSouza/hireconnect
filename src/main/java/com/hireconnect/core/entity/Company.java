@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -43,16 +44,8 @@ public class Company {
     @JoinColumn(unique = true, nullable = false, name = "owner_id")
     private User owner;
 
-    public Company(String name, String description, User owner) {
-        this.name = name;
-        this.description = description;
-        this.owner = owner;
-    }
-
-    public Company(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Department> departments;
 
     @PrePersist
     protected void onCreate() {
@@ -62,5 +55,30 @@ public class Company {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public Company(String name, String description, User owner) {
+        this.name = name;
+        this.description = description;
+        this.owner = owner;
+    }
+
+    public void addDepartment(Department department) {
+        if (department == null) return;
+        if (!this.departments.contains(department)) {
+            System.out.println("eNTROOU NO IF");
+            this.departments.add(department);
+            department.setCompany(this);
+
+            System.out.println("Company in department: " + (department.getCompany() != null ? department.getCompany().getId() : "null"));
+        }
+    }
+
+    public void removeDepartment(Department department) {
+        if (department == null) return;
+        if (this.departments.contains(department)) {
+            this.departments.remove(department);
+            department.setCompany(null);
+        }
     }
 }
