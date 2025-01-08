@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface CompanyAdminRepository extends JpaRepository<CompanyAdmin, UUID> {
     Optional<CompanyAdmin> findByCompanyIdAndUserId(UUID companyId, UUID userId);
+
+    boolean existsByCompanyIdAndUserId(UUID companyId, UUID userId);
 }
