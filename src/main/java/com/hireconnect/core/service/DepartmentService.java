@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,6 +29,14 @@ public class DepartmentService {
        company.addDepartment(payload);
 
         return this.repository.save(payload);
+    }
+
+
+    public List<Department> listDepartmentsFromCompany(UUID companyId) {
+        Company company = this.companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("The company with the given ID does not exist."));
+
+        return company.getDepartments();
     }
 
     private void validateDepartmentNameExists(String name, UUID companyId) {
