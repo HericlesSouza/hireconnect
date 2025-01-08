@@ -1,4 +1,4 @@
-package com.hireconnect.presentation.dto.department;
+package com.hireconnect.adapters.dto.department;
 
 import com.hireconnect.core.annotation.optionalNotBlank.OptionalNotBlank;
 import jakarta.validation.constraints.NotBlank;

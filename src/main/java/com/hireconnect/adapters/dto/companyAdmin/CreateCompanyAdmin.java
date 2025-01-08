@@ -1,4 +1,4 @@
-package com.hireconnect.presentation.dto.companyAdmin;
+package com.hireconnect.adapters.dto.companyAdmin;
 
 import com.hireconnect.core.annotation.validUUID.ValidUUID;
 import jakarta.validation.constraints.NotBlank;

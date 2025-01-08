@@ -1,4 +1,4 @@
-package com.hireconnect.presentation.dto.company;
+package com.hireconnect.adapters.dto.department;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CompanyDTO {
+@AllArgsConstructor
+public class DepartmentDTO {
     private UUID id;
     private String name;
     private String description;

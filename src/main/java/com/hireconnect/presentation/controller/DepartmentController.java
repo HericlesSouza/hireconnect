@@ -1,12 +1,12 @@
 package com.hireconnect.presentation.controller;
 
+import com.hireconnect.adapters.dto.department.CreateDepartmentDTO;
+import com.hireconnect.adapters.dto.department.DepartmentDTO;
+import com.hireconnect.adapters.dto.department.DepartmentWithCompanyDTO;
+import com.hireconnect.adapters.mapper.Mapper;
 import com.hireconnect.core.entity.Department;
 import com.hireconnect.core.service.DepartmentService;
 import com.hireconnect.core.utils.UUIDUtils;
-import com.hireconnect.presentation.dto.department.CreateDepartmentDTO;
-import com.hireconnect.presentation.dto.department.DepartmentDTO;
-import com.hireconnect.presentation.dto.department.DepartmentWithCompanyDTO;
-import com.hireconnect.presentation.mapper.DepartmentMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,16 +21,16 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/company/{companyId}/department")
 public class DepartmentController {
-    private final DepartmentMapper departmentMapper;
+    private final Mapper mapper;
     private final DepartmentService departmentService;
 
     @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")
     @PostMapping
     public ResponseEntity<DepartmentWithCompanyDTO> create(@PathVariable String companyId, @RequestBody @Valid CreateDepartmentDTO payload) {
         UUID companyUUID = UUIDUtils.fromString(companyId);
-        Department departmentToEntity = this.departmentMapper.toEntity(payload);
+        Department departmentToEntity = this.mapper.map(payload, Department.class);
         Department department = this.departmentService.create(departmentToEntity, companyUUID);
-        DepartmentWithCompanyDTO departmentWithCompanyDTO = this.departmentMapper.toDepartmentWithCompanyDTO(department);
+        DepartmentWithCompanyDTO departmentWithCompanyDTO = this.mapper.map(department, DepartmentWithCompanyDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(departmentWithCompanyDTO);
     }
 
@@ -40,7 +40,7 @@ public class DepartmentController {
     public ResponseEntity<List<DepartmentDTO>> listDepartmentsFromCompany(@PathVariable String companyId) {
         UUID companyUUID = UUIDUtils.fromString(companyId);
         List<Department> departments = this.departmentService.listDepartmentsFromCompany(companyUUID);
-        List<DepartmentDTO> departmentDTOS = departments.stream().map(this.departmentMapper::toDepartmentDTO).toList();
+        List<DepartmentDTO> departmentDTOS = departments.stream().map(department -> this.mapper.map(department, DepartmentDTO.class)).toList();
         return ResponseEntity.status(HttpStatus.OK).body(departmentDTOS);
     }
 }

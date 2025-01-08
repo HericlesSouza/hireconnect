@@ -1,6 +1,6 @@
-package com.hireconnect.presentation.dto.department;
+package com.hireconnect.adapters.dto.department;
 
-import com.hireconnect.presentation.dto.company.CompanyDTO;
+import com.hireconnect.adapters.dto.company.CompanyDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

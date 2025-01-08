@@ -2,7 +2,7 @@ package com.hireconnect.presentation.controller;
 
 import com.hireconnect.core.service.CompanyAdminService;
 import com.hireconnect.core.utils.UUIDUtils;
-import com.hireconnect.presentation.dto.companyAdmin.CreateCompanyAdmin;
+import com.hireconnect.adapters.dto.companyAdmin.CreateCompanyAdmin;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

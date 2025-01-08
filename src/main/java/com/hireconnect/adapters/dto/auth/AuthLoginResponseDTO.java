@@ -1,6 +1,6 @@
-package com.hireconnect.presentation.dto.auth;
+package com.hireconnect.adapters.dto.auth;
 
-import com.hireconnect.presentation.dto.user.UserDTO;
+import com.hireconnect.adapters.dto.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

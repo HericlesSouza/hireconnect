@@ -1,4 +1,4 @@
-package com.hireconnect.presentation.dto.user;
+package com.hireconnect.adapters.dto.user;
 
 import com.hireconnect.core.annotation.optionalNotBlank.OptionalNotBlank;
 import com.hireconnect.core.annotation.validEnum.ValidEnum;
