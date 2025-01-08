@@ -66,11 +66,8 @@ public class Company {
     public void addDepartment(Department department) {
         if (department == null) return;
         if (!this.departments.contains(department)) {
-            System.out.println("eNTROOU NO IF");
             this.departments.add(department);
             department.setCompany(this);
-
-            System.out.println("Company in department: " + (department.getCompany() != null ? department.getCompany().getId() : "null"));
         }
     }
 
