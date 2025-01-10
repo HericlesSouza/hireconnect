@@ -5,7 +5,6 @@ import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.CompanyRepository;
-import com.hireconnect.core.repository.UserRepository;
 import com.hireconnect.core.utils.UUIDUtils;
 import com.hireconnect.infra.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Service
 public class CompanyService {
     private final CompanyRepository repository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final SecurityUtils securityUtils;
 

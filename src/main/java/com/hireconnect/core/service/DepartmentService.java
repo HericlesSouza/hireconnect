@@ -1,5 +1,6 @@
 package com.hireconnect.core.service;
 
+import com.hireconnect.adapters.mapper.ModelMapperUtils;
 import com.hireconnect.core.entity.Company;
 import com.hireconnect.core.entity.Department;
 import com.hireconnect.core.exception.BusinessException;
@@ -26,7 +27,7 @@ public class DepartmentService {
         Company company = this.companyRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("The company with the given ID does not exist."));
 
-       company.addDepartment(payload);
+        company.addDepartment(payload);
 
         return this.repository.save(payload);
     }
@@ -37,6 +38,25 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("The company with the given ID does not exist."));
 
         return company.getDepartments();
+    }
+
+    public Department getById(UUID departmentId, UUID companyId) {
+        return this.repository.findByIdAndCompanyId(departmentId, companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company."));
+    }
+
+    @Transactional
+    public Department update(UUID departmentId, UUID companyId, Department payload) {
+        Department department = this.repository.findByIdAndCompanyId(departmentId, companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company."));
+
+        if (payload.getName() != null && !payload.getName().isEmpty()) {
+            this.validateDepartmentNameExists(payload.getName(), companyId);
+        }
+
+        ModelMapperUtils.mapNonNullProperties(payload, department);
+
+        return department;
     }
 
     private void validateDepartmentNameExists(String name, UUID companyId) {

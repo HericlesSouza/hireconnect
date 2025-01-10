@@ -3,6 +3,7 @@ package com.hireconnect.presentation.controller;
 import com.hireconnect.adapters.dto.department.CreateDepartmentDTO;
 import com.hireconnect.adapters.dto.department.DepartmentDTO;
 import com.hireconnect.adapters.dto.department.DepartmentWithCompanyDTO;
+import com.hireconnect.adapters.dto.department.UpdateDepartmentDTO;
 import com.hireconnect.adapters.mapper.Mapper;
 import com.hireconnect.core.entity.Department;
 import com.hireconnect.core.service.DepartmentService;
@@ -42,5 +43,26 @@ public class DepartmentController {
         List<Department> departments = this.departmentService.listDepartmentsFromCompany(companyUUID);
         List<DepartmentDTO> departmentDTOS = departments.stream().map(department -> this.mapper.map(department, DepartmentDTO.class)).toList();
         return ResponseEntity.status(HttpStatus.OK).body(departmentDTOS);
+    }
+
+    @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")
+    @GetMapping("/{departmentId}")
+    public ResponseEntity<DepartmentWithCompanyDTO> getById(@PathVariable String companyId, @PathVariable String departmentId) {
+        UUID companyUUID = UUIDUtils.fromString(companyId);
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        Department department = this.departmentService.getById(departmentUUID, companyUUID);
+        DepartmentWithCompanyDTO departmentWithCompanyDTO = this.mapper.map(department, DepartmentWithCompanyDTO.class);
+        return ResponseEntity.status(HttpStatus.OK).body(departmentWithCompanyDTO);
+    }
+
+    @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")
+    @PatchMapping("/{departmentId}")
+    public ResponseEntity<DepartmentWithCompanyDTO> update(@PathVariable String companyId, @PathVariable String departmentId, @Valid UpdateDepartmentDTO payload) {
+        UUID companyUUID = UUIDUtils.fromString(companyId);
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        Department departmentPayload = this.mapper.map(payload, Department.class);
+        Department department = this.departmentService.update(departmentUUID, companyUUID, departmentPayload);
+        DepartmentWithCompanyDTO departmentWithCompanyDTO = this.mapper.map(department, DepartmentWithCompanyDTO.class);
+        return ResponseEntity.status(HttpStatus.OK).body(departmentWithCompanyDTO);
     }
 }
