@@ -57,12 +57,22 @@ public class DepartmentController {
 
     @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")
     @PatchMapping("/{departmentId}")
-    public ResponseEntity<DepartmentWithCompanyDTO> update(@PathVariable String companyId, @PathVariable String departmentId, @Valid UpdateDepartmentDTO payload) {
+    public ResponseEntity<DepartmentWithCompanyDTO> update(@PathVariable String companyId, @PathVariable String departmentId, @RequestBody @Valid UpdateDepartmentDTO payload) {
         UUID companyUUID = UUIDUtils.fromString(companyId);
         UUID departmentUUID = UUIDUtils.fromString(departmentId);
         Department departmentPayload = this.mapper.map(payload, Department.class);
         Department department = this.departmentService.update(departmentUUID, companyUUID, departmentPayload);
         DepartmentWithCompanyDTO departmentWithCompanyDTO = this.mapper.map(department, DepartmentWithCompanyDTO.class);
         return ResponseEntity.status(HttpStatus.OK).body(departmentWithCompanyDTO);
+    }
+
+
+    @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")
+    @DeleteMapping("/{departmentId}")
+    public ResponseEntity<Void> delete(@PathVariable String companyId, @PathVariable String departmentId) {
+        UUID companyUUID = UUIDUtils.fromString(companyId);
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        this.departmentService.delete(departmentUUID, companyUUID);
+        return ResponseEntity.noContent().build();
     }
 }

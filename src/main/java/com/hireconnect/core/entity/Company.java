@@ -47,6 +47,9 @@ public class Company {
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Department> departments;
 
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompanyAdmin> companyAdmins;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -73,9 +76,6 @@ public class Company {
 
     public void removeDepartment(Department department) {
         if (department == null) return;
-        if (this.departments.contains(department)) {
-            this.departments.remove(department);
-            department.setCompany(null);
-        }
+        this.departments.remove(department);
     }
 }

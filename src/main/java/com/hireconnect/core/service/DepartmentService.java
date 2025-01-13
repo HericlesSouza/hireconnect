@@ -59,6 +59,20 @@ public class DepartmentService {
         return department;
     }
 
+    @Transactional
+    public void delete(UUID departmentId, UUID companyId) {
+        Company company = this.companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("The company with the given ID does not exist."));
+
+        Department department = company.getDepartments().stream()
+                .filter(d -> d.getId().equals(departmentId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company.")
+                );
+
+        company.removeDepartment(department);
+    }
+
     private void validateDepartmentNameExists(String name, UUID companyId) {
         boolean exists = repository.existsByNameAndCompanyId(name, companyId);
         if (exists) {
