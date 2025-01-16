@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -16,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"company"})
+@ToString(exclude = {"company", "jobVacancies"})
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,6 +45,9 @@ public class Department {
     @JoinColumn(nullable = false, name = "company_id")
     private Company company;
 
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobVacancies> jobVacancies = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -60,11 +65,32 @@ public class Department {
     }
 
     public void setCompany(Company company) {
-        if (this.company != company) { // Evita loops ou sobrescritas desnecessárias
+        if (this.company != company) {
+            if (this.company != null) {
+                this.company.getDepartments().remove(this);
+            }
             this.company = company;
             if (company != null && !company.getDepartments().contains(this)) {
-                company.getDepartments().add(this); // Sincroniza o lado inverso
+                company.getDepartments().add(this);
             }
+        }
+    }
+
+    public void removeCompany() {
+        if (this.company == null) return;
+        this.company.getDepartments().remove(this);
+        this.company = null;
+    }
+
+    public void addJobVacancies(JobVacancies jobVacancies) {
+        if (jobVacancies == null || this.jobVacancies.contains(jobVacancies)) return;
+        this.jobVacancies.add(jobVacancies);
+        jobVacancies.setDepartment(this);
+    }
+
+    public void removeJobVacancies(JobVacancies jobVacancies) {
+        if (jobVacancies != null && this.jobVacancies.remove(jobVacancies)) {
+            jobVacancies.setDepartment(null);
         }
     }
 }

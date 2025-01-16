@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,10 +46,10 @@ public class Company {
     private User owner;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Department> departments;
+    private List<Department> departments= new ArrayList<>();
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompanyAdmin> companyAdmins;
+    private List<CompanyAdmin> companyAdmins = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
@@ -75,7 +76,8 @@ public class Company {
     }
 
     public void removeDepartment(Department department) {
-        if (department == null) return;
-        this.departments.remove(department);
+        if (department != null && this.departments.remove(department)) {
+            department.setCompany(null);
+        }
     }
 }

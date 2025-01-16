@@ -11,4 +11,6 @@ public interface DepartmentRepository {
     Department save(Department department);
 
     Optional<Department> findByIdAndCompanyId(UUID departmentId, UUID companyId);
+
+    Optional<Department> findById(UUID departmentId);
 }
