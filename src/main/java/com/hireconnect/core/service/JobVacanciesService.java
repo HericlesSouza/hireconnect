@@ -48,6 +48,26 @@ public class JobVacanciesService {
         return jobVacancy;
     }
 
+    @Transactional
+    public JobVacancies activate(UUID jobId, UUID departmentId) {
+        JobVacancies jobVacancy = this.repository.findByIdAndDepartmentId(jobId, departmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("The job with the given ID does not exist in the specified department."));
+
+        jobVacancy.setActive(true);
+
+        return jobVacancy;
+    }
+
+    @Transactional
+    public JobVacancies softDelete(UUID jobId, UUID departmentId) {
+        JobVacancies jobVacancy = this.repository.findByIdAndDepartmentId(jobId, departmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("The job with the given ID does not exist in the specified department."));
+
+        jobVacancy.setActive(false);
+
+        return jobVacancy;
+    }
+
     private void validateJobVacancyExists(String name, UUID departmentId) {
         boolean exists = this.repository.existsByTitleAndDepartmentId(name, departmentId);
         if (exists) {

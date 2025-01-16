@@ -50,4 +50,30 @@ public class JobVacanciesController {
         JobVacanciesWithDepartmentDTO response = this.mapper.map(jobVacanciesUpdated, JobVacanciesWithDepartmentDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PreAuthorize("@securityService.isAdminOrOwner(authentication.principal, #departmentId)")
+    @PatchMapping("/{jobId}/activate")
+    public ResponseEntity<JobVacanciesWithDepartmentDTO> activate(
+            @PathVariable String jobId,
+            @PathVariable String departmentId
+    ) {
+        UUID jobUUID = UUIDUtils.fromString(jobId);
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        JobVacancies jobVacanciesDeleted = this.jobVacanciesService.activate(jobUUID, departmentUUID);
+        JobVacanciesWithDepartmentDTO jobVacanciesWithDepartmentDTO = this.mapper.map(jobVacanciesDeleted, JobVacanciesWithDepartmentDTO.class);
+        return ResponseEntity.status(HttpStatus.OK).body(jobVacanciesWithDepartmentDTO);
+    }
+
+    @PreAuthorize("@securityService.isAdminOrOwner(authentication.principal, #departmentId)")
+    @DeleteMapping("/{jobId}")
+    public ResponseEntity<JobVacanciesWithDepartmentDTO> softDelete(
+            @PathVariable String jobId,
+            @PathVariable String departmentId
+    ) {
+        UUID jobUUID = UUIDUtils.fromString(jobId);
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        JobVacancies jobVacanciesDeleted = this.jobVacanciesService.softDelete(jobUUID, departmentUUID);
+        JobVacanciesWithDepartmentDTO jobVacanciesWithDepartmentDTO = this.mapper.map(jobVacanciesDeleted, JobVacanciesWithDepartmentDTO.class);
+        return ResponseEntity.status(HttpStatus.OK).body(jobVacanciesWithDepartmentDTO);
+    }
 }
