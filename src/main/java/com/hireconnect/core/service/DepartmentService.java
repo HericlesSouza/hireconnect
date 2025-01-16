@@ -3,6 +3,7 @@ package com.hireconnect.core.service;
 import com.hireconnect.adapters.mapper.ModelMapperUtils;
 import com.hireconnect.core.entity.Company;
 import com.hireconnect.core.entity.Department;
+import com.hireconnect.core.entity.JobVacancies;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.CompanyRepository;
@@ -38,6 +39,13 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("The company with the given ID does not exist."));
 
         return company.getDepartments();
+    }
+
+    public List<JobVacancies> listJobVacancies(UUID companyId, UUID departmentId) {
+        Department department = this.repository.findByIdAndCompanyId(departmentId, companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company."));
+
+        return department.getJobVacancies();
     }
 
     public Department getById(UUID departmentId, UUID companyId) {
