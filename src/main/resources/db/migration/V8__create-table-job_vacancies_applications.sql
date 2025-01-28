@@ -7,6 +7,6 @@ CREATE TABLE job_vacancies_applications(
     "freelancer_id" UUID NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMP,
-    CONSTRAINT fk_job_vacancy FOREIGN KEY ("job_vacancy_id") REFERENCES job_vacancies ("id")
+    CONSTRAINT fk_job_vacancy FOREIGN KEY ("job_vacancy_id") REFERENCES job_vacancies ("id"),
     CONSTRAINT fk_freelancer FOREIGN KEY ("freelancer_id") REFERENCES freelancers ("id")
 )
