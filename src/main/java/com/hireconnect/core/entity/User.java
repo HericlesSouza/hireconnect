@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"company"})
+@ToString(exclude = {"company", "freelancer"})
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
@@ -59,6 +59,9 @@ public class User {
 
     @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
     private Company company;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true, orphanRemoval = true)
+    private Freelancer freelancer;
 
     public User(String name, String email, String password, String imgUrl, TypeUser typeUser) {
         this.name = name;

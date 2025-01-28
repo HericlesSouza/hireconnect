@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = {"department"})
+@ToString(exclude = {"department", "applications"})
 @NoArgsConstructor
 @Entity
 @Table(name = "job_vacancies")
@@ -42,6 +44,9 @@ public class JobVacancies {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
+
+    @OneToMany(mappedBy = "jobVacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobVacanciesApplication> applications = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
