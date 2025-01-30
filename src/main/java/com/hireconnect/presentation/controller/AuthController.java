@@ -6,6 +6,7 @@ import com.hireconnect.adapters.dto.user.UserCreateDTO;
 import com.hireconnect.adapters.dto.user.UserDTO;
 import com.hireconnect.adapters.dto.user.UserWithRelationsDTO;
 import com.hireconnect.adapters.mapper.Mapper;
+import com.hireconnect.core.entity.Freelancer;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,7 +28,14 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid UserCreateDTO payload) {
         User user = this.mapper.map(payload, User.class);
-        User userRegistered = this.authService.register(user);
+
+        Freelancer freelancer = null;
+
+        if (payload.getTypeUser().equalsIgnoreCase("FREELANCER")) {
+            freelancer = this.mapper.map(payload, Freelancer.class);
+        }
+
+        User userRegistered = this.authService.register(user, freelancer);
         UserDTO userDTO = this.mapper.map(userRegistered, UserDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }

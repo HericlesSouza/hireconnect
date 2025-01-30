@@ -1,5 +1,6 @@
 package com.hireconnect.core.service;
 
+import com.hireconnect.core.entity.Freelancer;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.AuthenticationException;
 import com.hireconnect.core.exception.EmailAlreadyExistsException;
@@ -21,12 +22,20 @@ public class AuthService {
     private final TokenService tokenService;
     private final SecurityUtils securityUtils;
 
-    public User register(User payload) {
+    public User register(User payload, Freelancer freelancerPayload) {
         this.validateEmailDoesNotExist(payload.getEmail());
 
         String passwordEncrypted = this.passwordEncoder.encode(payload.getPassword());
         User user = new User(payload.getName(), payload.getEmail(), passwordEncrypted, payload.getImgUrl(), payload.getTypeUser());
+
+        if (payload.getTypeUser().name().equalsIgnoreCase("FREELANCER")) {
+            Freelancer freelancer = new Freelancer(freelancerPayload.getSpecialization(), freelancerPayload.getBio());
+
+            user.setFreelancer(freelancer);
+        }
+
         this.userRepository.save(user);
+
         return user;
     }
 

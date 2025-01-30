@@ -80,4 +80,16 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void setFreelancer(Freelancer freelancer) {
+        if(freelancer == null) return;
+        this.freelancer = freelancer;
+        freelancer.setUser(this);
+    }
+
+    public void removeFreelancer() {
+        if(freelancer == null) return;
+        this.freelancer.setUser(null);
+        this.freelancer = null;
+    }
 }

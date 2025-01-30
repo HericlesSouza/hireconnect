@@ -1,5 +1,6 @@
 package com.hireconnect.adapters.dto.user;
 
+import com.hireconnect.core.annotation.freelancerFields.FreelancerFields;
 import com.hireconnect.core.annotation.optionalNotBlank.OptionalNotBlank;
 import com.hireconnect.core.annotation.validEnum.ValidEnum;
 import com.hireconnect.core.entity.TypeUser;
@@ -12,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+@FreelancerFields
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,4 +37,10 @@ public class UserCreateDTO {
     @NotNull(message = "typeUser is required.")
     @ValidEnum(enumClass = TypeUser.class, message = "Invalid value for typeUser. Accepted values are: FREELANCER, ADMIN, COMPANY.")
     private String typeUser;
+
+    @Size(max =  200)
+    private String specialization;
+
+    @Size(max =  2000)
+    private String bio;
 }

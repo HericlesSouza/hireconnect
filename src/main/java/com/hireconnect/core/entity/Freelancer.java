@@ -57,4 +57,9 @@ public class Freelancer {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
+    public Freelancer(String specialization, String bio) {
+        this.specialization = specialization;
+        this.bio = bio;
+    }
 }
