@@ -88,4 +88,12 @@ public class JobVacancies {
         this.department.getJobVacancies().remove(this);
         this.department = null;
     }
+
+    public void addApplication(JobVacanciesApplication application) {
+        if (application == null || this.applications.contains(application)) {
+            return;
+        }
+        this.applications.add(application);
+        application.setJobVacancy(this);
+    }
 }

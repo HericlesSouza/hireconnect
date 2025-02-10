@@ -1,5 +1,5 @@
 package com.hireconnect.core.entity;
 
-public enum JobApplicationStatus {
+public enum JobApplicationsStatus {
    REJECTED, PENDING, ACCEPTED
 }

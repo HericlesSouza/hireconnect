@@ -21,7 +21,7 @@ import java.util.UUID;
 public class JobVacanciesService {
     private final JobVacanciesRepository repository;
     private final DepartmentRepository departmentRepository;
-    private  final JobVacanciesApplicationRepository jobVacanciesApplicationRepository;
+    private final JobVacanciesApplicationRepository jobVacanciesApplicationRepository;
 
     @Transactional
     public JobVacancies create(JobVacancies payload, UUID departmentId) {

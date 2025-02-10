@@ -1,17 +1,20 @@
 package com.hireconnect.core.entity;
 
+import com.hireconnect.core.exception.BusinessException;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "job_vacancies_application")
+@Table(name = "job_vacancies_applications")
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -22,9 +25,10 @@ public class JobVacanciesApplication {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @NotBlank
-    @Column(name = "job_applications_status", nullable = false)
-    private JobApplicationStatus status;
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @NotNull
+    @Column(name = "status", nullable = false)
+    private JobApplicationsStatus status;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "freelancer_id", nullable = false)
@@ -48,5 +52,19 @@ public class JobVacanciesApplication {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void setApplication(JobVacancies jobVacancy, Freelancer freelancer) {
+        if (jobVacancy == null || freelancer == null) {
+            throw new BusinessException("Job vacancy and freelancer must not be null.");
+        }
+
+        if (this.jobVacancy != null || this.freelancer != null) {
+            throw new BusinessException("Application is already linked to a job vacancy and freelancer.");
+        }
+
+        this.setStatus(JobApplicationsStatus.PENDING);
+        freelancer.addApplication(this);
+        jobVacancy.addApplication(this);
     }
 }
