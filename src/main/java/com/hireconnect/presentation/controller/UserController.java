@@ -2,12 +2,15 @@ package com.hireconnect.presentation.controller;
 
 import com.hireconnect.adapters.dto.user.JobApplyResponseDTO;
 import com.hireconnect.adapters.dto.user.ListApplicationsResponseDTO;
+import com.hireconnect.adapters.dto.user.UpdateFreelancerDTO;
+import com.hireconnect.adapters.dto.user.UserWithFreelancerDTO;
+import com.hireconnect.adapters.mapper.Mapper;
 import com.hireconnect.adapters.mapper.MapperJobApplications;
-import com.hireconnect.core.entity.JobVacancies;
-import com.hireconnect.core.entity.JobVacanciesApplication;
-import com.hireconnect.core.entity.User;
+import com.hireconnect.core.entity.*;
 import com.hireconnect.core.service.FreelancerService;
+import com.hireconnect.core.service.UserService;
 import com.hireconnect.core.utils.UUIDUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +25,9 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
     private final FreelancerService freelancerService;
-    private final MapperJobApplications mapper;
+    private final MapperJobApplications mapperJobApplications;
+    private final UserService userService;
+    private final Mapper mapper;
 
     @PreAuthorize("hasRole('FREELANCER')")
     @PostMapping("/apply/{jobId}")
@@ -55,8 +60,28 @@ public class UserController {
     public ResponseEntity<ListApplicationsResponseDTO> listApplications(@RequestParam(required = false) String status) {
         List<JobVacanciesApplication> applications = this.freelancerService.listApplications(status);
 
-        ListApplicationsResponseDTO responseDTO = this.mapper.toResponseDTO(applications);
+        ListApplicationsResponseDTO responseDTO = this.mapperJobApplications.toResponseDTO(applications);
 
         return ResponseEntity.ok(responseDTO);
+    }
+
+    @PutMapping()
+    public ResponseEntity<UserWithFreelancerDTO> update(
+            @RequestBody
+            @Valid
+            UpdateFreelancerDTO payload
+    ) {
+        User user = this.mapper.map(payload, User.class);
+        Freelancer freelancer = null;
+
+        if (payload.getTypeUser().equalsIgnoreCase(TypeUser.FREELANCER.name())) {
+            freelancer = this.mapper.map(payload, Freelancer.class);
+        }
+
+        User userUpdated = this.userService.update(user, freelancer);
+
+        UserWithFreelancerDTO response = this.mapper.map(userUpdated, UserWithFreelancerDTO.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

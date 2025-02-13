@@ -1,6 +1,7 @@
 package com.hireconnect.presentation.exception;
 
 import com.hireconnect.core.exception.ApiException;
+import com.hireconnect.core.exception.EmailAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleRequestParameterException(MissingServletRequestParameterException ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage());
         return ResponseEntity.status(apiError.getStatus()).body(apiError);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+        List<String> errors = List.of("Email is already registered.", "Please use a different email address.");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getMessage(), errors);
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
