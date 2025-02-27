@@ -87,4 +87,16 @@ public class JobVacanciesController {
         UpdateStatusApplicationDTO updateStatusApplicationDTO = this.mapper.map(updateStatusApplication, UpdateStatusApplicationDTO.class);
         return ResponseEntity.status(HttpStatus.OK).body(updateStatusApplicationDTO);
     }
+
+    @PreAuthorize("@securityService.isAdminOrOwner(authentication.principal, #departmentId)")
+    @DeleteMapping("/freelancer/{freelancerId}")
+    public ResponseEntity<Void> dismissFreelancer(
+            @PathVariable String departmentId,
+            @PathVariable String freelancerId
+    ) {
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        UUID freelancerUUID = UUIDUtils.fromString(freelancerId);
+        this.jobVacanciesService.dismissEmployee(departmentUUID, freelancerUUID);
+        return ResponseEntity.noContent().build();
+    }
 }

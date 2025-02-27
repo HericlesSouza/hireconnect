@@ -7,6 +7,7 @@ import com.hireconnect.core.entity.JobVacancies;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.CompanyRepository;
+import com.hireconnect.core.repository.ContractRepository;
 import com.hireconnect.core.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class DepartmentService {
     private final DepartmentRepository repository;
     private final CompanyRepository companyRepository;
+    private final ContractRepository contractRepository;
 
     @Transactional
     public Department create(Department payload, UUID companyId) {

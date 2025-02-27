@@ -94,8 +94,13 @@ public class JobVacanciesService {
 
         JobVacanciesApplication updatedApplication = jobVacanciesApplicationRepository.save(application);
 
-        Contract contract = null;
-        if ("accepted".equalsIgnoreCase(status)) {
+        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerId(
+                        application.getJobVacancy().getDepartment().getId(),
+                        application.getFreelancer().getId()
+                )
+                .orElse(null);
+
+        if ("accepted".equalsIgnoreCase(status) && contract == null) {
             contract = new Contract();
             contract.setFreelancer(application.getFreelancer());
             contract.setJobVacancy(application.getJobVacancy());
@@ -104,6 +109,16 @@ public class JobVacanciesService {
         }
 
         return new UpdateStatusApplicationResponse(updatedApplication, contract);
+    }
+
+    @Transactional
+    public void dismissEmployee(UUID departmentId, UUID freelancerId) {
+        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerId(departmentId, freelancerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Department or freelancer not found"));
+
+        contract.setActive(false);
+
+        this.contractRepository.save(contract);
     }
 
     private void validateJobVacancyExists(String name, UUID departmentId) {
