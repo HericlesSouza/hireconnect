@@ -1,18 +1,22 @@
 package com.hireconnect.core.service;
 
 import com.hireconnect.core.entity.Company;
+import com.hireconnect.core.entity.Department;
 import com.hireconnect.core.entity.User;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.CompanyRepository;
+import com.hireconnect.core.repository.ContractRepository;
 import com.hireconnect.core.utils.UUIDUtils;
 import com.hireconnect.infra.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class CompanyService {
     private final CompanyRepository repository;
     private final ModelMapper modelMapper;
     private final SecurityUtils securityUtils;
+    private final ContractRepository contractRepository;
 
     @Transactional
     public Company create(Company payload) {
@@ -67,8 +72,12 @@ public class CompanyService {
         User user = this.securityUtils.getAuthenticatedUser();
 
         if (user.getCompany() == null) {
-        throw new ResourceNotFoundException("This user does not have any company associated with them.");
+            throw new ResourceNotFoundException("This user does not have any company associated with them.");
         }
+
+        List<Department> companyDepartments = user.getCompany().getDepartments();
+
+        companyDepartments.forEach(department -> this.validateDepartmentHasNoActiveContract(department.getId()));
 
         user.setCompany(null);
     }
@@ -82,5 +91,12 @@ public class CompanyService {
     private void mapNonNullProperties(Company source, Company target) {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.map(source, target);
+    }
+
+    private void validateDepartmentHasNoActiveContract(UUID departmentId) {
+        boolean hasActiveContract = contractRepository.existsByDepartmentIdAndIsActiveTrue(departmentId);
+        if (hasActiveContract) {
+            throw new BusinessException("The department with id: `" + departmentId + "` has freelancers associated and cannot be deleted.", HttpStatus.CONFLICT);
+        }
     }
 }

@@ -1,9 +1,7 @@
 package com.hireconnect.core.service;
 
 import com.hireconnect.adapters.mapper.ModelMapperUtils;
-import com.hireconnect.core.entity.Company;
-import com.hireconnect.core.entity.Department;
-import com.hireconnect.core.entity.JobVacancies;
+import com.hireconnect.core.entity.*;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
 import com.hireconnect.core.repository.CompanyRepository;
@@ -50,6 +48,14 @@ public class DepartmentService {
         return department.getJobVacancies();
     }
 
+    public List<User> listFreelancers(UUID departmentId) {
+        List<Contract> contracts = this.contractRepository.findAllByDepartmentIdAndIsActiveTrue(departmentId);
+
+        return contracts.stream()
+                .map(contract -> contract.getFreelancer().getUser())
+                .toList();
+    }
+
     public Department getById(UUID departmentId, UUID companyId) {
         return this.repository.findByIdAndCompanyId(departmentId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company."));
@@ -80,6 +86,8 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("The department with the given ID does not exist in the specified company.")
                 );
 
+        this.validateDepartmentHasNoActiveContract(departmentId);
+
         company.removeDepartment(department);
     }
 
@@ -87,6 +95,13 @@ public class DepartmentService {
         boolean exists = repository.existsByNameAndCompanyId(name, companyId);
         if (exists) {
             throw new BusinessException("A department with this name already exists in the company.");
+        }
+    }
+
+    private void validateDepartmentHasNoActiveContract(UUID departmentId) {
+        boolean hasActiveContract = contractRepository.existsByDepartmentIdAndIsActiveTrue(departmentId);
+        if (hasActiveContract) {
+            throw new BusinessException("The department has freelancers associated and cannot be deleted.");
         }
     }
 }
