@@ -1,14 +1,15 @@
 package com.hireconnect.core.service;
 
 import com.hireconnect.adapters.mapper.ModelMapperUtils;
-import com.hireconnect.core.entity.Department;
-import com.hireconnect.core.entity.JobVacancies;
-import com.hireconnect.core.entity.JobVacanciesApplication;
+import com.hireconnect.core.entity.*;
 import com.hireconnect.core.exception.BusinessException;
 import com.hireconnect.core.exception.ResourceNotFoundException;
+import com.hireconnect.core.repository.ContractRepository;
 import com.hireconnect.core.repository.DepartmentRepository;
 import com.hireconnect.core.repository.JobVacanciesApplicationRepository;
 import com.hireconnect.core.repository.JobVacanciesRepository;
+import com.hireconnect.core.service.dto.UpdateStatusApplicationResponse;
+import com.hireconnect.core.utils.UUIDUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class JobVacanciesService {
     private final JobVacanciesRepository repository;
     private final DepartmentRepository departmentRepository;
     private final JobVacanciesApplicationRepository jobVacanciesApplicationRepository;
+    private final ContractRepository contractRepository;
 
     @Transactional
     public JobVacancies create(JobVacancies payload, UUID departmentId) {
@@ -52,7 +54,6 @@ public class JobVacanciesService {
             this.validateJobVacancyExists(payload.getTitle(), departmentId);
         }
 
-
         ModelMapperUtils.mapNonNullProperties(payload, jobVacancy);
 
         return jobVacancy;
@@ -76,6 +77,33 @@ public class JobVacanciesService {
         jobVacancy.setActive(false);
 
         return jobVacancy;
+    }
+
+    @Transactional
+    public UpdateStatusApplicationResponse updateStatusApplication(String applicationId, String status) {
+        if (!"accepted".equalsIgnoreCase(status) && !"rejected".equalsIgnoreCase(status)) {
+            throw new BusinessException("status: must be 'accepted' or 'rejected'");
+        }
+
+        UUID applicationUUID = UUIDUtils.fromString(applicationId);
+
+        JobVacanciesApplication application = jobVacanciesApplicationRepository.findById(applicationUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found with the provided ID"));
+
+        application.setStatus(JobApplicationsStatus.valueOf(status.toUpperCase()));
+
+        JobVacanciesApplication updatedApplication = jobVacanciesApplicationRepository.save(application);
+
+        Contract contract = null;
+        if ("accepted".equalsIgnoreCase(status)) {
+            contract = new Contract();
+            contract.setFreelancer(application.getFreelancer());
+            contract.setJobVacancy(application.getJobVacancy());
+            contract.setDepartment(application.getJobVacancy().getDepartment());
+            contract = this.contractRepository.save(contract);
+        }
+
+        return new UpdateStatusApplicationResponse(updatedApplication, contract);
     }
 
     private void validateJobVacancyExists(String name, UUID departmentId) {

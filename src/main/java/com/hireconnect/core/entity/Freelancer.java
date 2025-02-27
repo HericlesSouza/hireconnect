@@ -42,6 +42,9 @@ public class Freelancer {
     @OneToMany(mappedBy = "freelancer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobVacanciesApplication> applications = new ArrayList<>();
 
+    @OneToMany(mappedBy = "freelancer", fetch = FetchType.LAZY)
+    private List<Contract> contracts = new ArrayList<>();
+
     @Column(nullable = false, name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -69,5 +72,13 @@ public class Freelancer {
         }
         this.applications.add(application);
         application.setFreelancer(this);
+    }
+
+    public void addContract(Contract contract) {
+        if (contract == null || this.contracts.contains(contract)) {
+            return;
+        }
+        this.contracts.add(contract);
+        contract.setFreelancer(this);
     }
 }

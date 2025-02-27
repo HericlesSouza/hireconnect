@@ -1,11 +1,10 @@
 package com.hireconnect.presentation.controller;
 
-import com.hireconnect.adapters.dto.jobVacancies.CreateJobVacanciesDTO;
-import com.hireconnect.adapters.dto.jobVacancies.JobVacanciesWithDepartmentDTO;
-import com.hireconnect.adapters.dto.jobVacancies.UpdateJobVacanciesDTO;
+import com.hireconnect.adapters.dto.jobVacancies.*;
 import com.hireconnect.adapters.mapper.Mapper;
 import com.hireconnect.core.entity.JobVacancies;
 import com.hireconnect.core.service.JobVacanciesService;
+import com.hireconnect.core.service.dto.UpdateStatusApplicationResponse;
 import com.hireconnect.core.utils.UUIDUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +74,17 @@ public class JobVacanciesController {
         JobVacancies jobVacanciesDeleted = this.jobVacanciesService.softDelete(jobUUID, departmentUUID);
         JobVacanciesWithDepartmentDTO jobVacanciesWithDepartmentDTO = this.mapper.map(jobVacanciesDeleted, JobVacanciesWithDepartmentDTO.class);
         return ResponseEntity.status(HttpStatus.OK).body(jobVacanciesWithDepartmentDTO);
+    }
+
+    @PreAuthorize("@securityService.isAdminOrOwner(authentication.principal, #departmentId)")
+    @PatchMapping("/{applicationId}/status")
+    public ResponseEntity<UpdateStatusApplicationDTO> updateStatusApplication(
+            @RequestBody @Valid CreateApplicationStatusDTO status,
+            @PathVariable String applicationId,
+            @PathVariable String departmentId
+    ) {
+        UpdateStatusApplicationResponse updateStatusApplication = this.jobVacanciesService.updateStatusApplication(applicationId, status.getStatus());
+        UpdateStatusApplicationDTO updateStatusApplicationDTO = this.mapper.map(updateStatusApplication, UpdateStatusApplicationDTO.class);
+        return ResponseEntity.status(HttpStatus.OK).body(updateStatusApplicationDTO);
     }
 }

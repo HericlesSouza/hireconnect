@@ -48,6 +48,9 @@ public class Department {
     @OneToMany(mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobVacancies> jobVacancies = new ArrayList<>();
 
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+    private List<Contract> contracts = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -92,5 +95,13 @@ public class Department {
         if (jobVacancies != null && this.jobVacancies.remove(jobVacancies)) {
             jobVacancies.setDepartment(null);
         }
+    }
+
+    public void addContract(Contract contract) {
+        if (contract == null || this.contracts.contains(contract)) {
+            return;
+        }
+        this.contracts.add(contract);
+        contract.setDepartment(this);
     }
 }

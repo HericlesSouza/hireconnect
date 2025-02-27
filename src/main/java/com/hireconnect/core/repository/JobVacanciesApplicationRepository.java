@@ -12,5 +12,7 @@ public interface JobVacanciesApplicationRepository {
 
     Optional<List<JobVacanciesApplication>> findByJobVacancyId(UUID uuid);
 
+    Optional<JobVacanciesApplication> findById(UUID id);
+
     List<JobVacanciesApplication> findByFreelancerIdAndStatus(UUID uuid, JobApplicationsStatus status);
 }
