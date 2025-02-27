@@ -94,7 +94,7 @@ public class JobVacanciesService {
 
         JobVacanciesApplication updatedApplication = jobVacanciesApplicationRepository.save(application);
 
-        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerId(
+        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerIdAndIsActiveTrue(
                         application.getJobVacancy().getDepartment().getId(),
                         application.getFreelancer().getId()
                 )
@@ -113,7 +113,7 @@ public class JobVacanciesService {
 
     @Transactional
     public void dismissEmployee(UUID departmentId, UUID freelancerId) {
-        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerId(departmentId, freelancerId)
+        Contract contract = this.contractRepository.findByDepartmentIdAndFreelancerIdAndIsActiveTrue(departmentId, freelancerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Department or freelancer not found"));
 
         contract.setActive(false);

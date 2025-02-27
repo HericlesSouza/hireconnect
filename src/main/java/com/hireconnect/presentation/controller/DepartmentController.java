@@ -5,9 +5,11 @@ import com.hireconnect.adapters.dto.department.DepartmentDTO;
 import com.hireconnect.adapters.dto.department.DepartmentWithCompanyDTO;
 import com.hireconnect.adapters.dto.department.UpdateDepartmentDTO;
 import com.hireconnect.adapters.dto.jobVacancies.JobVacanciesDTO;
+import com.hireconnect.adapters.dto.user.UserWithFreelancerDTO;
 import com.hireconnect.adapters.mapper.Mapper;
 import com.hireconnect.core.entity.Department;
 import com.hireconnect.core.entity.JobVacancies;
+import com.hireconnect.core.entity.User;
 import com.hireconnect.core.service.DepartmentService;
 import com.hireconnect.core.utils.UUIDUtils;
 import jakarta.validation.Valid;
@@ -55,6 +57,15 @@ public class DepartmentController {
         List<JobVacancies> jobVacancies = this.departmentService.listJobVacancies(companyUUID, departmentUUID);
         List<JobVacanciesDTO> jobVacanciesDTOS = jobVacancies.stream().map(jobVacancy -> this.mapper.map(jobVacancy, JobVacanciesDTO.class)).toList();
         return ResponseEntity.status(HttpStatus.OK).body(jobVacanciesDTOS);
+    }
+
+    @PreAuthorize("@securityService.isAdminOrOwner(authentication.principal, #departmentId)")
+    @GetMapping("/{departmentId}/freelancers")
+    public ResponseEntity<List<UserWithFreelancerDTO>> listFreelancers(@PathVariable String companyId, @PathVariable String departmentId) {
+        UUID departmentUUID = UUIDUtils.fromString(departmentId);
+        List<User> users = this.departmentService.listFreelancers(departmentUUID);
+        List<UserWithFreelancerDTO> usersWithFreelancerDTO = users.stream().map(user -> this.mapper.map(user, UserWithFreelancerDTO.class)).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(usersWithFreelancerDTO);
     }
 
     @PreAuthorize("@securityService.canAccessCompany(authentication.principal, #companyId)")

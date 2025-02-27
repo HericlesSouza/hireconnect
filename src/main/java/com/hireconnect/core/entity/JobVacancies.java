@@ -48,7 +48,7 @@ public class JobVacancies {
     @OneToMany(mappedBy = "jobVacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobVacanciesApplication> applications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "jobVacancy", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "jobVacancy", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contract> contracts = new ArrayList<>();
 
     @PrePersist
