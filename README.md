@@ -96,6 +96,14 @@ O projeto segue princípios modernos de desenvolvimento:
 
 ---
 
+## 🔄 Importação de Rotas no Insomnia ou Postman
+
+Para facilitar os testes da API, você pode importar todas as rotas diretamente no **Insomnia** ou no **Postman**.
+
+📥 **Baixar export do Insomnia:** [Insomnia_Export.json](./InsomniaJSON.json)
+
+---
+
 ## 📩 Contato
 
 Caso tenha dúvidas ou sugestões, entre em contato:
